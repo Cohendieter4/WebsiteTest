@@ -3,58 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phone Dialer</title>
+    <title>Phone Call Simulator</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f5f5f5;
-        }
-        input {
-            padding: 10px;
-            margin: 10px;
-            width: 200px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        #message {
-            margin-top: 10px;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 5px; }
+        #status { margin-top: 20px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>Phone Dialer</h1>
-    <input type="text" id="phoneNumber" placeholder="Enter Phone Number">
-    <button onclick="makeCall()">Call</button>
-    <div id="message"></div>
+    <h1>Phone Call Simulator</h1>
+    <input type="text" id="phoneNumber" placeholder="Enter phone number" />
+    <button id="callButton">Call</button>
+    <button id="hangupButton" disabled>Hang Up</button>
+    
+    <div id="status"></div>
 
     <script>
-        function makeCall() {
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const messageDiv = document.getElementById('message');
+        const callButton = document.getElementById('callButton');
+        const hangupButton = document.getElementById('hangupButton');
+        const statusDiv = document.getElementById('status');
 
-            if (phoneNumber) {
-                messageDiv.textContent = `Calling ${phoneNumber}...`;
-            } else {
-                messageDiv.textContent = 'Please enter a number.';
+        callButton.onclick = () => {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            if (!phoneNumber) {
+                alert("Please enter a phone number.");
+                return;
             }
-        }
+
+            statusDiv.textContent = `Calling ${phoneNumber}...`;
+            callButton.disabled = true;
+            hangupButton.disabled = false;
+
+            // Simulate call duration
+            setTimeout(() => {
+                statusDiv.textContent = `Call with ${phoneNumber} ended.`;
+                hangupButton.disabled = true;
+                callButton.disabled = false;
+            }, 5000); // Simulates a 5-second call
+        };
+
+        hangupButton.onclick = () => {
+            statusDiv.textContent = "Call ended.";
+            hangupButton.disabled = true;
+            callButton.disabled = false;
+        };
     </script>
 
 </body>
