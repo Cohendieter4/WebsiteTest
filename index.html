@@ -3,10 +3,40 @@
   <head>
     <title>Page Title</title>
 
-    <h1>My First Heading</h1>
-    <p>My first paragraph</p>
+    <h1>ME COOKING</h1>
+    <p>Rule 1: Let me cook</p>
     
   </head>
 </html>
+import tkinter as tk
+
+class PhoneDialer:
+    def __init__(self, master):
+        self.master = master
+        master.title("Phone Dialer")
+
+        self.label = tk.Label(master, text="Enter Phone Number:")
+        self.label.pack()
+
+        self.phone_number = tk.Entry(master)
+        self.phone_number.pack()
+
+        self.call_button = tk.Button(master, text="Call", command=self.call)
+        self.call_button.pack()
+
+        self.message = tk.Label(master, text="")
+        self.message.pack()
+
+    def call(self):
+        number = self.phone_number.get()
+        if number:
+            self.message.config(text=f"Calling {number}...")
+        else:
+            self.message.config(text="Please enter a number.")
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    phone_dialer = PhoneDialer(root)
+    root.mainloop()
 
 
