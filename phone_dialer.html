@@ -1,42 +1,61 @@
-<!DOCTYOE html>
-<html>
-  <head>
-    <title>Page Title</title>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Dialer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #message {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
 
-    <h1>ME COOKING</h1>
-    <p>Rule 1: Let me cook</p>
-    
-  </head>
+    <h1>Phone Dialer</h1>
+    <input type="text" id="phoneNumber" placeholder="Enter Phone Number">
+    <button onclick="makeCall()">Call</button>
+    <div id="message"></div>
+
+    <script>
+        function makeCall() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const messageDiv = document.getElementById('message');
+
+            if (phoneNumber) {
+                messageDiv.textContent = `Calling ${phoneNumber}...`;
+            } else {
+                messageDiv.textContent = 'Please enter a number.';
+            }
+        }
+    </script>
+
+</body>
 </html>
-import tkinter as tk
-
-class PhoneDialer:
-    def __init__(self, master):
-        self.master = master
-        master.title("Phone Dialer")
-
-        self.label = tk.Label(master, text="Enter Phone Number:")
-        self.label.pack()
-
-        self.phone_number = tk.Entry(master)
-        self.phone_number.pack()
-
-        self.call_button = tk.Button(master, text="Call", command=self.call)
-        self.call_button.pack()
-
-        self.message = tk.Label(master, text="")
-        self.message.pack()
-
-    def call(self):
-        number = self.phone_number.get()
-        if number:
-            self.message.config(text=f"Calling {number}...")
-        else:
-            self.message.config(text="Please enter a number.")
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    phone_dialer = PhoneDialer(root)
-    root.mainloop()
-
-
