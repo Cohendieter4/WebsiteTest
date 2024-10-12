@@ -3,86 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Number Guessing Game</title>
+    <title>Ultimate Guess the Number Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
+            background-color: #eaeaea;
+            color: #333;
             margin-top: 50px;
         }
         input {
             padding: 10px;
-            width: 100px;
-            margin-right: 10px;
+            font-size: 16px;
+            width: 50px;
         }
         button {
-            padding: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            margin: 5px;
+            cursor: pointer;
         }
         .message {
             margin-top: 20px;
-            font-size: 1.2em;
+            font-size: 18px;
         }
-        .score {
+        #guessList {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+        }
+        #restart {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #score, #timer, #highScore {
+            font-size: 20px;
             margin-top: 10px;
+        }
+        #difficulty {
+            margin: 20px 0;
+        }
+        .guess {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .low { background-color: #ffcccc; }
+        .high { background-color: #ccffcc; }
+        .correct { background-color: #cce5ff; }
+        .leaderboard {
+            margin-top: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
-
-    <h1>Guess the Number!</h1>
-    <p>I'm thinking of a number between 1 and 100.</p>
-    <input type="number" id="guess" placeholder="Enter your guess" />
-    <button onclick="checkGuess()">Submit Guess</button>
+    <h1>Ultimate Guess the Number!</h1>
+    <div id="difficulty">
+        <label for="difficultySelect">Choose Difficulty:</label>
+        <select id="difficultySelect">
+            <option value="easy">Easy (1-50, 10 attempts)</option>
+            <option value="medium" selected>Medium (1-100, 10 attempts)</option>
+            <option value="hard">Hard (1-200, 5 attempts)</option>
+        </select>
+    </div>
+    <p>I'm thinking of a number. You have <span id="attemptsLeft">10</span> attempts and <span id="timer">30</span> seconds.</p>
+    <input type="number" id="guess" min="1" autofocus>
+    <button onclick="checkGuess()">Guess</button>
     <div class="message" id="message"></div>
-    <div class="score" id="score"></div>
+    <ul id="guessList"></ul>
+    <div id="score">Score: <span id="scoreValue">0</span></div>
+    <div id="highScore">High Score: <span id="highScoreValue">0</span></div>
+    <button id="restart" onclick="restartGame()">Play Again</button>
+    <div class="leaderboard" id="leaderboard"></div>
 
     <script>
-        let randomNumber = Math.floor(Math.random() * 100) + 1;
-        let attempts = 0;
-        let bestScore = Infinity;
+        let randomNumber;
+        let attempts;
+        let score = 0;
+        let timer;
+        let countdown;
+        let highScore = 0;
+        const maxAttemptsEasy = 10;
+        const maxAttemptsMedium = 10;
+        const maxAttemptsHard = 5;
+
+        function startGame() {
+            const difficulty = document.getElementById('difficultySelect').value;
+            switch (difficulty) {
+                case 'easy':
+                    randomNumber = Math.floor(Math.random() * 50) + 1;
+                    attempts = maxAttemptsEasy;
+                    break;
+                case 'medium':
+                    randomNumber = Math.floor(Math.random() * 100) + 1;
+                    attempts = maxAttemptsMedium;
+                    break;
+                case 'hard':
+                    randomNumber = Math.floor(Math.random() * 200) + 1;
+                    attempts = maxAttemptsHard;
+                    break;
+            }
+            score = 0;
+            document.getElementById('attemptsLeft').textContent = attempts;
+            document.getElementById('timer').textContent = 30;
+            document.getElementById('scoreValue').textContent = score;
+            document.getElementById('message').textContent = '';
+            document.getElementById('guessList').innerHTML = '';
+            document.getElementById('restart').style.display = 'none';
+            startTimer();
+            document.getElementById('highScoreValue').textContent = highScore;
+        }
+
+        function startTimer() {
+            let timeLeft = 30;
+            countdown = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    endGame(false);
+                }
+            }, 1000);
+        }
 
         function checkGuess() {
-            const userGuess = Number(document.getElementById('guess').value);
-            attempts++;
-            const messageElement = document.getElementById('message');
-            const scoreElement = document.getElementById('score');
+            const userGuess = parseInt(document.getElementById('guess').value);
+            const message = document.getElementById('message');
+            const guessList = document.getElementById('guessList');
 
-            if (userGuess === randomNumber) {
-                messageElement.textContent = `Congratulations! You guessed the number ${randomNumber} in ${attempts} attempts!`;
-                updateBestScore(attempts);
-                resetGame();
-            } else if (userGuess < randomNumber) {
-                messageElement.textContent = "Too low! Try again.";
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 200) {
+                message.textContent = "Please enter a valid number.";
+                return;
+            }
+
+            attempts--;
+            document.getElementById('attemptsLeft').textContent = attempts;
+            const guessItem = document.createElement('li');
+            guessItem.textContent = userGuess;
+            guessItem.classList.add('guess');
+
+            if (userGuess < randomNumber) {
+                message.textContent = "Too low! Try again.";
+                guessItem.classList.add('low');
+            } else if (userGuess > randomNumber) {
+                message.textContent = "Too high! Try again.";
+                guessItem.classList.add('high');
             } else {
-                messageElement.textContent = "Too high! Try again.";
+                message.textContent = `Congratulations! You guessed the number ${randomNumber}!`;
+                score += attempts * 10; // Score based on remaining attempts
+                endGame(true);
+                return;
             }
 
-            if (attempts % 5 === 0) {
-                provideHint();
-            }
+            guessList.appendChild(guessItem);
 
-            scoreElement.textContent = `Attempts: ${attempts} | Best Score: ${bestScore === Infinity ? "N/A" : bestScore}`;
-        }
-
-        function updateBestScore(currentScore) {
-            if (currentScore < bestScore) {
-                bestScore = currentScore;
+            if (attempts === 0) {
+                message.textContent = `Game over! The number was ${randomNumber}.`;
+                endGame(false);
             }
         }
 
-        function provideHint() {
-            const hintMessage = randomNumber % 2 === 0 ? "Hint: The number is even." : "Hint: The number is odd.";
-            document.getElementById('message').textContent += ` ${hintMessage}`;
+        function endGame(isWin) {
+            clearInterval(countdown);
+            document.getElementById('restart').style.display = 'block';
+            document.getElementById('scoreValue').textContent = score;
+
+            if (isWin) {
+                if (score > highScore) {
+                    highScore = score;
+                }
+                document.getElementById('highScoreValue').textContent = highScore;
+            }
+            displayLeaderboard();
         }
 
-        function resetGame() {
-            randomNumber = Math.floor(Math.random() * 100) + 1;
-            attempts = 0;
-            document.getElementById('guess').value = '';
+        function displayLeaderboard() {
+            const leaderboard = document.getElementById('leaderboard');
+            leaderboard.innerHTML = '<strong>Leaderboard:</strong><br>';
+            // Here you can store and display the top scores if you wish.
+            leaderboard.innerHTML += `Current High Score: ${highScore}<br>`;
         }
+
+        function restartGame() {
+            startGame();
+        }
+
+        // Start the game when the page loads
+        window.onload = startGame;
     </script>
-
 </body>
 </html>
+        
