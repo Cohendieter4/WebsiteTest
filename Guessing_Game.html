@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Number Guessing Game</title>
+    <title>Advanced Number Guessing Game</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -24,6 +24,9 @@
             margin-top: 20px;
             font-size: 1.2em;
         }
+        .score {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -33,23 +36,51 @@
     <input type="number" id="guess" placeholder="Enter your guess" />
     <button onclick="checkGuess()">Submit Guess</button>
     <div class="message" id="message"></div>
+    <div class="score" id="score"></div>
 
     <script>
-        const randomNumber = Math.floor(Math.random() * 100) + 1;
+        let randomNumber = Math.floor(Math.random() * 100) + 1;
         let attempts = 0;
+        let bestScore = Infinity;
 
         function checkGuess() {
             const userGuess = Number(document.getElementById('guess').value);
             attempts++;
             const messageElement = document.getElementById('message');
+            const scoreElement = document.getElementById('score');
 
             if (userGuess === randomNumber) {
                 messageElement.textContent = `Congratulations! You guessed the number ${randomNumber} in ${attempts} attempts!`;
+                updateBestScore(attempts);
+                resetGame();
             } else if (userGuess < randomNumber) {
                 messageElement.textContent = "Too low! Try again.";
             } else {
                 messageElement.textContent = "Too high! Try again.";
             }
+
+            if (attempts % 5 === 0) {
+                provideHint();
+            }
+
+            scoreElement.textContent = `Attempts: ${attempts} | Best Score: ${bestScore === Infinity ? "N/A" : bestScore}`;
+        }
+
+        function updateBestScore(currentScore) {
+            if (currentScore < bestScore) {
+                bestScore = currentScore;
+            }
+        }
+
+        function provideHint() {
+            const hintMessage = randomNumber % 2 === 0 ? "Hint: The number is even." : "Hint: The number is odd.";
+            document.getElementById('message').textContent += ` ${hintMessage}`;
+        }
+
+        function resetGame() {
+            randomNumber = Math.floor(Math.random() * 100) + 1;
+            attempts = 0;
+            document.getElementById('guess').value = '';
         }
     </script>
 
